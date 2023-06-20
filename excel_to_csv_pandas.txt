@@ -1,0 +1,38 @@
+import pandas as pd
+from jinja2 import Environment, FileSystemLoader
+import csv
+
+# Function to convert Excel to CSV
+def excel_to_csv(excel_file, csv_file):
+    df = pd.read_excel(excel_file)
+    df.to_csv(csv_file, index=False)
+
+# Function to render CSV data with a Jinja2 template
+def render_csv_with_template(csv_file, template_file):
+    # Setup Jinja2 environment
+    env = Environment(loader=FileSystemLoader('.'))
+    template = env.get_template(template_file)
+    
+    # Read CSV file
+    data = []
+    with open(csv_file, 'r') as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            data.append(row)
+    
+    # Render data with template
+    output = template.render(data=data)
+    
+    return output
+
+# Convert Excel to CSV
+excel_file = 'input.xlsx'  # Replace with your Excel file path
+csv_file = 'output.csv'  # The output CSV file path
+excel_to_csv(excel_file, csv_file)
+
+# Use CSV file as input for Jinja2 CSV template
+template_file = 'template.jinja'  # Replace with your Jinja2 template file path
+output = render_csv_with_template(csv_file, template_file)
+
+# Print the output
+print(output)
